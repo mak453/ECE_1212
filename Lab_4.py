@@ -1,5 +1,4 @@
 import numpy as np
-from decimal import *
 
 
 class Lab4:
@@ -80,17 +79,17 @@ class Lab4:
               str(Lab4.Rl) + " , W low = " + str(Lab4.OMEGA) + " ["+str(Lab4.FREQ) + "Hz]")
 
 
-def organize(dict: dict, test: Lab4):
+def organize(dictionary: dict, test: Lab4):
     voltages = []
     currents = []
     resistors = []
     capacitors = []
     gain = 0
 
-    for name, value in dict.items():
+    for name, value in dictionary.items():
         first_letter = name[0]
 
-        value = "{:.3e}".format(value)
+        value = f"{value:.3e}"
         [num, notation] = value.split("e")
 
         power = int(notation)
@@ -133,3 +132,14 @@ def organize(dict: dict, test: Lab4):
 
 test_1 = Lab4()
 organize(test_1.__dict__, test_1)
+
+answers = ["yes", "y"]
+print()
+again = input("Calculate another? (y/n) ")
+
+while again in answers:
+    Vcc = float(input("Enter Vcc: "))
+    new_test = Lab4(Vcc)
+    print()
+    organize(new_test.__dict__, new_test)
+    again = input("Calculate another? (y/n) ")
