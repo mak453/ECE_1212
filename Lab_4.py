@@ -46,13 +46,13 @@ class Lab4:
 
     def solve_step_3(self):
         self.Re = float((self.Rac + Lab4.Rc)/4)
-        self.Icq = float(self.Veq/(5.0*self.Re))
-        Rdc = Lab4.Rc + self.Re
-        self.Vceq = float(self.Vcc - self.Icq*Rdc)
+        self.Rdc = Lab4.Rc + self.Re
+        self.Icq = float(self.Vcc/(self.Rac + self.Rdc))
+        self.Vceq = float(self.Vcc - self.Icq*self.Rdc)
 
     def solve_gain(self):
-        Ibq = 2*self.Vceq/Lab4.beta
-        self.r_pi = Lab4.Vt/Ibq
+        self.Ibq = 2*self.Vceq/Lab4.beta
+        self.r_pi = Lab4.Vt/self.Ibq
         self.Av = -(Lab4.beta*self.Rac)/self.r_pi
         self.Vin = -Lab4.Vout/self.Av
 
@@ -63,20 +63,21 @@ class Lab4:
         ratio = self.Vbb/self.Vcc
         self.R2 = self.Rbb/ratio
         self.R1 = (ratio*self.R2)/(1-ratio)
+        self.R1_to_R2 = self.R1/self.R2
 
     def solve_capacitors(self):
-        re = Lab4.Vt/self.Icq
-        self.Ce = 1.25/(Lab4.OMEGA*re)
+        self.re = Lab4.Vt/self.Icq
+        self.Ce = 1.25/(Lab4.OMEGA*self.re)
         self.C2 = 10/(Lab4.OMEGA*(Lab4.Rc + Lab4.Rl))
-        Rin = self.parallel_resistance([self.Rbb, self.r_pi])
-        self.C1 = 10/(Lab4.OMEGA*Rin)
+        self.Rin = self.parallel_resistance([self.Rbb, self.r_pi])
+        self.C1 = 10/(Lab4.OMEGA*self.Rin)
 
     def display(self):
         print("Test #" + str(Lab4.num))
         print("--------------")
         print("Given and constraints:")
         print("\tRc = " + str(Lab4.Rc) + " , Rl = " +
-              str(Lab4.Rl) + " , W low = " + str(Lab4.OMEGA) + " ["+str(Lab4.FREQ) + "Hz]")
+              str(Lab4.Rl) + " , W low = " + str(np.round(Lab4.OMEGA, 3)) + " ["+str(Lab4.FREQ) + "Hz]\n")
 
 
 def organize(dictionary: dict, test: Lab4):
@@ -118,11 +119,12 @@ def organize(dictionary: dict, test: Lab4):
         elif first_letter in ["R", "r"]:
             resistors.append(name + ": " + value)
         elif first_letter == "C":
-            capacitors.append(name + ": " + value)
+            capacitors.append(name + " >= " + value)
         elif first_letter == "A":
             gain = value
 
-    print("Test #" + str(test.num)+"\n---------------------")
+    # print("Test #" + str(test.num)+"\n---------------------")
+    test.display()
     print("Gain:\n\t" + gain + "\n")
     print("Voltages:\n\t" + ", ".join(voltages) + "\n")
     print("Currents:\n\t" + ", ".join(currents) + "\n")
