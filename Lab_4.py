@@ -47,11 +47,11 @@ class Lab4:
     def solve_step_3(self):
         self.Re = float((self.Rac + Lab4.Rc)/4)
         self.Rdc = Lab4.Rc + self.Re
-        self.Icq = float(self.Vcc/(self.Rac + self.Rdc))
+        self.Icq = float(self.Vcc/(self.Rac + self.Rdc))/10
         self.Vceq = float(self.Vcc - self.Icq*self.Rdc)
 
     def solve_gain(self):
-        self.Ibq = 2*self.Vceq/Lab4.beta
+        self.Ibq = self.Icq/self.beta
         self.r_pi = Lab4.Vt/self.Ibq
         self.Av = -(Lab4.beta*self.Rac)/self.r_pi
         self.Vin = -Lab4.Vout/self.Av
@@ -59,7 +59,8 @@ class Lab4:
     def solve_step_5(self):
         self.Rbb = 0.1*Lab4.beta*self.Re
         Vbq = self.Veq + Lab4.Vbe
-        self.Vbb = 1.1*self.Veq + Lab4.Vbe
+        # self.Vbb = 1.1*self.Veq + Lab4.Vbe
+        self.Vbb = 1.1*self.Ic*self.Re+self.Vbe
         ratio = self.Vbb/self.Vcc
         self.R2 = self.Rbb/ratio
         self.R1 = (ratio*self.R2)/(1-ratio)
