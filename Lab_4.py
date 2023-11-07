@@ -17,7 +17,7 @@ class Lab4:
     Vce = 0.016
     Ic = 5e-3
     Ib = 1e-3
-    beta = Ic/Ib
+    beta = 287
 
     def __init__(self, Vcc=12.0) -> None:
         self.Vcc = Vcc
@@ -34,21 +34,19 @@ class Lab4:
         self.solve_capacitors()
 
     def parallel_resistance(self, resistors: list):
-        return np.product(resistors)/np.sum(resistors)
+        return 1/np.sum(1/np.array(resistors))
 
     def solve_Veq(self):
         # Given that Veq = 0.2Vcc
         self.Veq = float(.2*self.Vcc)
 
     def solve_Rac(self):
-        resistors = [Lab4.Rc, Lab4.Rl]
-        self.Rac = float(self.parallel_resistance(resistors))
+        self.Rac = float(self.parallel_resistance([Lab4.Rc, Lab4.Rl]))
 
     def solve_step_3(self):
-        self.Re = float((self.Rac + Lab4.Rc)/4)
-        self.Rdc = Lab4.Rc + self.Re
-        self.Icq = float(self.Vcc/(self.Rac + self.Rdc))/10
-        self.Vceq = float(self.Vcc - self.Icq*self.Rdc)
+        self.Icq = (self.Vcc - (self.Vcc/5))/(self.Rac+self.Rc)
+        self.Re = self.Vcc/(5*self.Icq)
+        self.Rdc = self.Rc + self.Re
 
     def solve_gain(self):
         self.Ibq = self.Icq/self.beta
@@ -58,13 +56,12 @@ class Lab4:
 
     def solve_step_5(self):
         self.Rbb = 0.1*Lab4.beta*self.Re
-        Vbq = self.Veq + Lab4.Vbe
-        # self.Vbb = 1.1*self.Veq + Lab4.Vbe
-        self.Vbb = 1.1*self.Ic*self.Re+self.Vbe
+        self.Vbq = self.Veq + Lab4.Vbe
+        self.Vbb = 1.1*(self.Ic*self.Re)+self.Vbe
+        # ratio = R1/(R1 + R2)
         ratio = self.Vbb/self.Vcc
         self.R2 = self.Rbb/ratio
-        self.R1 = (ratio*self.R2)/(1-ratio)
-        self.R1_to_R2 = self.R1/self.R2
+        self.R1 = self.Rbb/self.R2
 
     def solve_capacitors(self):
         self.re = Lab4.Vt/self.Icq
@@ -146,3 +143,6 @@ while again in answers:
     print()
     organize(new_test.__dict__, new_test)
     again = input("Calculate another? (y/n) ")
+
+print("Rin: ", test_1.parallel_resistance([175, 287, 536]))
+print("Ro: ", test_1.parallel_resistance([1264, 590]))
